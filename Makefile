@@ -1,0 +1,8 @@
+CC=gcc
+CFLAGS=-o
+LDFLAGS=-lncurses
+SOURCES=snake.c
+EXECUTABLE=snake
+
+all:
+	$(CC) $(LDFLAGS) $(SOURCES) $(CFLAGS) $(EXECUTABLE)
