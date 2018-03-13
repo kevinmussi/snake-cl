@@ -46,7 +46,7 @@ int main(int argc, char * argv[]) {
     int vel = BEG_VEL, ch, i, dir = 0; //0 = fermo, 1 = destra, 2 = sinistra, 3 = su, 4 = giù
 	
     if(argc != 2) {
-        printf("Errore! Modalità d'apertura: ./snake <nickname>\n");
+        printf("Error! Launch with: ./snake <nickname>\n");
         return 0;
     }
     
@@ -106,8 +106,8 @@ int main(int argc, char * argv[]) {
     
     salva_punteggio(tipo_fine);
     
-    printf(tipo_fine == 0 ? "Hai perso la partita " : "Hai terminato la partita ");
-    printf("con un punteggio pari a %d. Premi INVIO per uscire... ", punteggio);
+    printf(tipo_fine == 0 ? "You lost " : "You quitted ");
+    printf("with %d points. Press any key to continue... ", punteggio);
     fflush(stdout);
     ch = getchar();
     
@@ -392,7 +392,7 @@ int salva_punteggio(int tipo_fine) {
     end = time(NULL);
     durata = (int) difftime(end, start); //durata della partita
     
-    if((fp = fopen("snake_punteggi.txt", "at")) == NULL) //apro il file
+    if((fp = fopen("snake_log.txt", "at")) == NULL) //apro il file
         return -1;
         
     while ((ch = fgetc(fp)) != EOF); //arrivo alla fine del file...
