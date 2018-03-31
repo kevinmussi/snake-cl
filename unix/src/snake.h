@@ -17,10 +17,10 @@
 #define BEG_X 12
 #define BEG_Y 10
 #define BEG_VEL 120
-#define DESTRA 1
-#define SINISTRA 2
-#define SU 3
-#define GIU 4
+#define RIGHT 1
+#define LEFT 2
+#define UP 3
+#define DOWN 4
 
 // Typedefs
 
@@ -32,6 +32,7 @@ typedef struct {
 typedef struct snake {
     coordinate p;
     struct snake *next;
+    int direction;
 } snake;
 
 typedef enum boolean {

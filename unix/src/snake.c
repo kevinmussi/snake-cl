@@ -88,8 +88,8 @@ void launch(boolean no_obst, boolean hard, boolean screen_wrap) {
     
     salva_punteggio(tipo_fine);
     
-    printf(tipo_fine == 0 ? "You lost " : "You quit ");
-    printf("with %d points. Press 'r' to restart. Press any other key to exit... ", punteggio);
+    printw(tipo_fine == 0 ? "You lost " : "You quit ");
+    printw("with %d points. Press 'r' to restart. Press any other key to exit... ", punteggio);
     fflush(stdout);
     
     nodelay(stdscr, FALSE);
@@ -106,19 +106,19 @@ void calcola_successivo(int dir, coordinate *testa, coordinate *successivo) {
     int X, Y; //assumono solo valori -1, 0, 1
     
     switch(dir) {
-        case DESTRA:
+        case RIGHT:
             X = 1;
             Y = 0;
             break;
-        case SINISTRA:
+        case LEFT:
             X = -1;
             Y = 0;
             break;
-        case SU:
+        case UP:
             X = 0;
             Y = -1;
             break;
-        case GIU:
+        case DOWN:
             X = 0;
             Y = 1;
             break;
@@ -137,7 +137,7 @@ void calcola_successivo(int dir, coordinate *testa, coordinate *successivo) {
 void controlla_collisione(int **M, snake **testa, int dir) {
     coordinate successivo;
     snake *nuovo, *temp;
-    int ch;
+    int ch, succ;
     
     calcola_successivo(dir, &((*testa)->p), &successivo);
     
@@ -147,13 +147,14 @@ void controlla_collisione(int **M, snake **testa, int dir) {
         return;
     }
     
-#define SUCC M[successivo.y][successivo.x]
+    succ = M[successivo.y][successivo.x];
     
-    if(SUCC == -1) { //se il serpente mangia il cibo
+    if(succ == -1) { //se il serpente mangia il cibo
         nuovo = (snake *) malloc(sizeof(snake)); //creo un nuovo elemento del serpente
         nuovo->p.x = successivo.x; //aggiorno la posizione dell'elemento
         nuovo->p.y = successivo.y;
         nuovo->next = NULL;
+        nuovo->direction = dir;
         temp = *testa;
         while(temp->next != NULL) temp = temp->next;
         temp->next = nuovo;
@@ -163,13 +164,10 @@ void controlla_collisione(int **M, snake **testa, int dir) {
             genera(M, -2); //aggiungo un ostacolo
         }
         genera(M, -1); //aggiungo il nuovo cibo
-    } else if(SUCC == -2 || SUCC > 1) { //se è avvenuta una collisione
+    } else if(succ == -2 || succ > 1) { //se è avvenuta una collisione
         tipo_fine = 0;
         fine = 1;
     }
-    
-#undef SUCC
-    
 }
 
 snake *movimento(int **M, int dir, snake *testa) {
@@ -185,6 +183,7 @@ snake *movimento(int **M, int dir, snake *testa) {
         M[testa->p.y][testa->p.x] = 0;
         testa->p.x = successivo.x; //aggiorno le coordinate della testa nella lista
         testa->p.y = successivo.y;
+        testa->direction = dir;
     } else {
         M[testa->p.y][testa->p.x] = 2; //cambio il valore della vecchia testa nella matrice
         temp = testa;
@@ -198,6 +197,7 @@ snake *movimento(int **M, int dir, snake *testa) {
         M[successivo.y][successivo.x] = 1; //aggiorno la testa nella matrice
         testa->p.x = successivo.x; //aggiorno le coordinate della testa nella lista
         testa->p.y = successivo.y;
+        testa->direction = dir;
     }
     
     return testa;
@@ -242,23 +242,23 @@ void direzione(int ch, int *dir) {
         switch(ch) {
             case 100: //D
             case KEY_RIGHT:
-                if(*dir != SINISTRA || punteggio == 0)
-                    *dir = DESTRA;
+                if(*dir != LEFT || punteggio == 0)
+                    *dir = RIGHT;
                 break;
             case 97: //A
             case KEY_LEFT:
-                if(*dir != DESTRA || punteggio == 0)
-                    *dir = SINISTRA;
+                if(*dir != RIGHT || punteggio == 0)
+                    *dir = LEFT;
                 break;
             case 119: //W
             case KEY_UP:
-                if(*dir != GIU || punteggio == 0)
-                    *dir = SU;
+                if(*dir != DOWN || punteggio == 0)
+                    *dir = UP;
                 break;
             case 115: //S
             case KEY_DOWN:
-                if(*dir != SU || punteggio == 0)
-                    *dir = GIU;
+                if(*dir != UP || punteggio == 0)
+                    *dir = DOWN;
                 break;
             case 'q':
                 tipo_fine = 1;
@@ -300,16 +300,16 @@ void set_colors(snake *testa, int dir) {
         case 0:
             car = ACS_DIAMOND;
             break;
-        case GIU:
+        case DOWN:
             car = ACS_DARROW;
             break;
-        case SU:
+        case UP:
             car = ACS_UARROW;
             break;
-        case DESTRA:
+        case RIGHT:
             car = ACS_RARROW;
             break;
-        case SINISTRA:
+        case LEFT:
             car = ACS_LARROW;
             break;
         default: break;
@@ -322,27 +322,26 @@ void set_colors(snake *testa, int dir) {
         return;
     }
     
+    // We traverse the snake from its head to its tail, so pr
     prev = testa;
     testa = testa->next;
-    
     while(testa->next != NULL) {
         if(prev->p.x == (testa->next)->p.x)
             car = ACS_VLINE;
         else if(prev->p.y == (testa->next)->p.y)
             car = ACS_HLINE;
-        //da qui in poi bisogna fidarsi di quello che ho fatto
-        else if((prev->p.y > testa->p.y && testa->p.x < (testa->next)->p.x) ||
-                (prev->p.x > testa->p.x && testa->p.y < (testa->next)->p.y))
-            car = ACS_ULCORNER;
-        else if((prev->p.x < testa->p.x && testa->p.y < (testa->next)->p.y) ||
-                (prev->p.y > testa->p.y && testa->p.x > (testa->next)->p.x))
-            car = ACS_URCORNER;
-        else if((prev->p.x < testa->p.x && testa->p.y > (testa->next)->p.y) ||
-                (prev->p.y < testa->p.y && testa->p.x > (testa->next)->p.x))
+        else if((testa->direction == RIGHT && prev->direction == UP) ||
+                (testa->direction == DOWN && prev->direction == LEFT))
             car = ACS_LRCORNER;
-        else if((prev->p.y < testa->p.y && testa->p.x < (testa->next)->p.x) ||
-                (prev->p.x > testa->p.x && testa->p.y > (testa->next)->p.y))
+        else if((testa->direction == LEFT && prev->direction == UP) ||
+                (testa->direction == DOWN && prev->direction == RIGHT))
             car = ACS_LLCORNER;
+        else if((testa->direction == RIGHT && prev->direction == DOWN) ||
+                (testa->direction == UP && prev->direction == LEFT))
+            car = ACS_URCORNER;
+        else if((testa->direction == LEFT && prev->direction == DOWN) ||
+                (testa->direction == UP && prev->direction == RIGHT))
+            car = ACS_ULCORNER;
             
         ADD_CAR(testa->p, car);
         prev = testa;
@@ -381,6 +380,7 @@ void init(int **M, snake *testa) {
     testa->p.x = BEG_X; //salvo le coordinate di partenza nella struct
     testa->p.y = BEG_Y;
     testa->next = NULL;
+    testa->direction = 0;
     cibo.x = (BEG_X+COLS)/2;
     cibo.y = BEG_Y;
 }
