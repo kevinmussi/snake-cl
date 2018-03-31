@@ -8,18 +8,31 @@ char *nick;
 time_t start, end;
 unsigned short fine;
 int tipo_fine;
+int num_obst;
 coordinate ostacoli[100], cibo;
+int obst_freq;
+boolean hard_flag;
+boolean screen_wrap_flag;
 
 // Functions
 
-void launch() {
+void launch(boolean no_obst, boolean hard, boolean screen_wrap) {
     snake *testa, *temp;
     int **M;
     int vel = BEG_VEL, ch, i, dir = 0; //0 = fermo, 1 = destra, 2 = sinistra, 3 = su, 4 = giù
     char car;
     
+    num_obst = 0;
     punteggio = 0;
     fine = 0;
+    hard_flag = hard;
+    screen_wrap_flag = screen_wrap;
+    
+    if(no_obst == True) {
+        obst_freq = 0;
+    } else {
+        obst_freq = (hard == True) ? 1 : 5;
+    }
     
     testa = (snake *) malloc(sizeof(snake));
     M = (int **) malloc(ROWS * sizeof(int *));
@@ -82,7 +95,7 @@ void launch() {
     nodelay(stdscr, FALSE);
     if((car = getch()) == 'r') {
         fseek(stdin, 0, SEEK_END); // Clear input buffer
-        launch(); // Launch a new game
+        launch(no_obst, hard, screen_wrap); // Launch a new game
     }
     
     endwin(); // Close the ncurses window
@@ -114,6 +127,11 @@ void calcola_successivo(int dir, coordinate *testa, coordinate *successivo) {
     
     successivo->x = testa->x + X;
     successivo->y = testa->y + Y;
+    
+    if(screen_wrap_flag == True) {
+        successivo->x = (successivo->x + COLS) % COLS;
+        successivo->y = (successivo->y + ROWS) % ROWS;
+    }
 }
 
 void controlla_collisione(int **M, snake **testa, int dir) {
@@ -140,8 +158,10 @@ void controlla_collisione(int **M, snake **testa, int dir) {
         while(temp->next != NULL) temp = temp->next;
         temp->next = nuovo;
         M[nuovo->p.y][nuovo->p.x] = 2;
-        
-        if(++punteggio % 5 == 0) genera(M, -2); //ogni 5 punti aggiungo un ostacolo
+        punteggio++;
+        if(obst_freq != 0 && punteggio % obst_freq == 0) {
+            genera(M, -2); //aggiungo un ostacolo
+        }
         genera(M, -1); //aggiungo il nuovo cibo
     } else if(SUCC == -2 || SUCC > 1) { //se è avvenuta una collisione
         tipo_fine = 0;
@@ -205,8 +225,11 @@ int genera(int **M, int tipo) {
         cibo.x = x;
         cibo.y = y;
     } else {
-        ostacoli[punteggio/5].x = x;
-        ostacoli[punteggio/5].y = y;
+        if(obst_freq == 0)
+            return -2;
+        ostacoli[num_obst].x = x;
+        ostacoli[num_obst].y = y;
+        num_obst++;
     }
     
     return 0;
@@ -264,9 +287,9 @@ void set_colors(snake *testa, int dir) {
     ADD_CAR(cibo, ACS_DIAMOND);
     attroff(COLOR_PAIR(2));
     
-    if(punteggio >= 5) { //stampo gli ostacoli
+    if(num_obst != 0) { //stampo gli ostacoli
         attron(COLOR_PAIR(3));
-        for(i = 0; i < punteggio/5; i++)
+        for(i = 0; i < num_obst; i++)
             ADD_CAR(ostacoli[i], ACS_DIAMOND);
         attroff(COLOR_PAIR(3));
     }
@@ -339,8 +362,10 @@ void set_colors(snake *testa, int dir) {
 }
 
 void cambia_velocità(int *vel) {
-    if(punteggio > 0 && punteggio < 100 && punteggio % 10 == 0) {
-        *vel = BEG_VEL*(100-punteggio)/100;
+    if(hard_flag == True) {
+        *vel = 48;
+    } else if(punteggio > 0 && punteggio < 90 && punteggio % 10 == 0) {
+        *vel = BEG_VEL - punteggio*4/5;
     }
 }
 
@@ -373,7 +398,11 @@ int salva_punteggio(int tipo_fine) {
         
     while ((ch = fgetc(fp)) != EOF); //arrivo alla fine del file...
     
-    fprintf(fp, "%s;%d;%d;%d\n", ctime(&end), punteggio, durata, tipo_fine); //...e salvo il nuovo punteggio
+    char *time = ctime(&end);
+    char *p = strchr(time, '\n');
+    if(p) *p = '\0';
+    
+    fprintf(fp, "%s;%d;%d;%d\n", time, punteggio, durata, tipo_fine); //...e salvo il nuovo punteggio
     
     fclose(fp); //chiudo il file
     

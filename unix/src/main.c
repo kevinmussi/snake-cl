@@ -9,7 +9,7 @@ int main(int argc, char * argv[]) {
     //nick = (char *) malloc(sizeof(char) * strlen(argv[1])); //alloca la memoria per il nickname
     //strcpy(nick, argv[1]);
     
-    launch();
+    launch(False, False, True);
     
     return 0;
 }

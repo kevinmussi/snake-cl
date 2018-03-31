@@ -34,6 +34,11 @@ typedef struct snake {
     struct snake *next;
 } snake;
 
+typedef enum boolean {
+    False = 0,
+    True = 1
+} boolean;
+
 // Functions
 
 void launch();
