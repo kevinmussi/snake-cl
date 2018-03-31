@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-o
 LDFLAGS=-lncurses
-SOURCES=./src/snake.c
+SOURCES=./src/main.c ./src/snake.c
 EXECUTABLE=./bin/snake
 
 all:

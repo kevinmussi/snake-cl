@@ -1,63 +1,33 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <unistd.h>
-#include <ncurses.h>
-#include <string.h>
+#include "snake.h"
 
-#define ROWS 20
-#define COLS 50
-#define BEG_X 12
-#define BEG_Y 10
-#define BEG_VEL 120
-#define DESTRA 1
-#define SINISTRA 2
-#define SU 3
-#define GIU 4
+// Global variables
 
-typedef struct {int x; int y;} coordinate;
-struct snake1 {coordinate p; struct snake1 *next;};
-typedef struct snake1 snake;
-
-int punteggio = 0;
+int punteggio;
 int DIM_X, DIM_Y;
-char *nick; //nickname, va passato come parametro al main
-time_t start, end; //per calcolare la durata di una partita
-short fine = 0;
+char *nick;
+time_t start, end;
+unsigned short fine;
 int tipo_fine;
-coordinate ostacoli[100];
-coordinate cibo;
+coordinate ostacoli[100], cibo;
 
-void init(int **, snake *);
-void set_colors(snake *, int);
-void direzione(int, int *);
-int salva_punteggio(int);
-void controlla_collisione(int **, snake **, int);
-void cambia_velocità(int *);
-snake *movimento(int **, int, snake *);
-int genera(int **, int);
-void calcola_successivo(int, coordinate *, coordinate *);
-void board(int, int, int, int);
-void test(int **);
+// Functions
 
-int main(int argc, char * argv[]) {
+void launch() {
     snake *testa, *temp;
     int **M;
     int vel = BEG_VEL, ch, i, dir = 0; //0 = fermo, 1 = destra, 2 = sinistra, 3 = su, 4 = giù
-	
-    if(argc != 2) {
-        printf("Error! Launch with: ./snake <nickname>\n");
-        return 0;
-    }
+    char car;
     
-    nick = (char *) malloc(sizeof(char) * strlen(argv[1])); //alloca la memoria per il nickname
-    strcpy(nick, argv[1]);
+    punteggio = 0;
+    fine = 0;
+    
     testa = (snake *) malloc(sizeof(snake));
     M = (int **) malloc(ROWS * sizeof(int *));
     for(i = 0; i < ROWS; i++)
         M[i] = (int *) malloc(COLS * sizeof(int *));
     
     initscr(); //inizializzo la finestra
+    clear();
     noecho(); //gli input non vengono mostrati a schermo
     start_color(); //uso i colori
     cbreak(); //i comandi speciali vengono annullati
@@ -73,9 +43,9 @@ int main(int argc, char * argv[]) {
     getmaxyx(stdscr, DIM_Y, DIM_X); //ottengo le dimensioni della finestra
     set_colors(testa, 0); //stampo la situazione iniziale
     
-#define BORDO() board((DIM_Y-ROWS)/2-1,(DIM_X-COLS)/2-1,ROWS+1,COLS+2);
+#define BOARD() board((DIM_Y-ROWS)/2-1,(DIM_X-COLS)/2-1,ROWS+1,COLS+2);
     
-    BORDO(); //stampo il bordo
+    BOARD(); //stampo il bordo
     refresh();
     
     start = time(NULL);
@@ -90,32 +60,37 @@ int main(int argc, char * argv[]) {
                 testa = movimento(M, dir, testa); //muovo il serpente
                 cambia_velocità(&vel); //aumento la velocità a seconda del punteggio
                 clear(); //elimino il contenuto dello schermo
-                BORDO(); //stampo il bordo
+                BOARD(); //stampo il bordo
                 set_colors(testa, dir);
-                //test(M);
                 refresh(); //aggiorno lo schermo
                 usleep(vel*1000); //aspetto vel millisecondi
             }
         }
     }
 
-#undef BORDO
+#undef BOARD
     
+    clear();
     refresh();
-    endwin(); //chiudo la finestra
     
     salva_punteggio(tipo_fine);
     
-    printf(tipo_fine == 0 ? "You lost " : "You quitted ");
-    printf("with %d points. Press any key to continue... ", punteggio);
+    printf(tipo_fine == 0 ? "You lost " : "You quit ");
+    printf("with %d points. Press 'r' to restart. Press any other key to exit... ", punteggio);
     fflush(stdout);
-    ch = getchar();
     
-    return 0;
+    nodelay(stdscr, FALSE);
+    if((car = getch()) == 'r') {
+        fseek(stdin, 0, SEEK_END); // Clear input buffer
+        launch(); // Launch a new game
+    }
+    
+    endwin(); // Close the ncurses window
+    return;
 }
 
 void calcola_successivo(int dir, coordinate *testa, coordinate *successivo) {
-    int X, Y; //assumono solo valori -1, 0, 1, utili a ottimizzare la funzione
+    int X, Y; //assumono solo valori -1, 0, 1
     
     switch(dir) {
         case DESTRA:
@@ -267,6 +242,7 @@ void direzione(int ch, int *dir) {
                 fine = 1;
                 break;
             case ' ':
+            case 'p':
                 nodelay(stdscr, FALSE);
                 while((car = getch()) != ' '); //metto il gioco in pausa finché non si preme la barra spaziatrice
                 nodelay(stdscr, TRUE); //ripristino l'impostazione di gioco
@@ -397,8 +373,7 @@ int salva_punteggio(int tipo_fine) {
         
     while ((ch = fgetc(fp)) != EOF); //arrivo alla fine del file...
     
-    fprintf(fp, "%s;%d;%d;%d;%s\n", nick, punteggio, durata, tipo_fine,
-                                    ctime(&end)); //...e salvo il nuovo punteggio
+    fprintf(fp, "%s;%d;%d;%d\n", ctime(&end), punteggio, durata, tipo_fine); //...e salvo il nuovo punteggio
     
     fclose(fp); //chiudo il file
     
