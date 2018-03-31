@@ -1,8 +1,9 @@
 CC=gcc
 CFLAGS=-o
 LDFLAGS=-lncurses
-SOURCES=snake.c
-EXECUTABLE=snake
+SOURCES=./src/snake.c
+EXECUTABLE=./bin/snake
 
 all:
+	mkdir -p bin
 	$(CC) $(LDFLAGS) $(SOURCES) $(CFLAGS) $(EXECUTABLE)
