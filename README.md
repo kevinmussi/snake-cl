@@ -9,7 +9,7 @@ make
 This should compile the C program into an executable called `snake` in a folder called `bin`. If there's compilation problems, it's probably due to the file `ncurses.h` missing: if that's the case, just download it and include it in your build path.
 If you're using **Windows**, I already compiled the program and included the executable in the appropriate folder.
 
-## How to lanuch
+## How to launch
 To launch the program, just go in the folder containing the `snake` executable and type
 ```
 ./snake
