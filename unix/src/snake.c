@@ -71,7 +71,7 @@ void launch(boolean no_obst, boolean hard, boolean screen_wrap) {
             controlla_collisione(M, &testa, dir); //controllo se avviene una collisione
             if(fine == 0) { //se non è avvenuta una collisione
                 testa = movimento(M, dir, testa); //muovo il serpente
-                cambia_velocità(&vel); //aumento la velocità a seconda del punteggio
+                cambia_velocita(&vel); //aumento la velocita' a seconda del punteggio
                 clear(); //elimino il contenuto dello schermo
                 BOARD(); //stampo il bordo
                 set_colors(testa, dir);
@@ -360,7 +360,7 @@ void set_colors(snake *testa, int dir) {
     
 }
 
-void cambia_velocità(int *vel) {
+void cambia_velocita(int *vel) {
     if(hard_flag == True) {
         *vel = 48;
     } else if(punteggio > 0 && punteggio < 90 && punteggio % 10 == 0) {

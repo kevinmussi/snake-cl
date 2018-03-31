@@ -48,7 +48,7 @@ void set_colors(snake *, int);
 void direzione(int, int *);
 int salva_punteggio(int);
 void controlla_collisione(int **, snake **, int);
-void cambia_velocità(int *);
+void cambia_velocita(int *);
 snake *movimento(int **, int, snake *);
 int genera(int **, int);
 void calcola_successivo(int, coordinate *, coordinate *);
