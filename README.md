@@ -2,11 +2,11 @@
 This repository contains a C implementation of the classic Snake game, which exploits the `ncurses` library to build a nice text interface in the Terminal.
 
 ## How to compile
-If you're using a **Unix** system (MacOS or Linux), just use the Terminal to go in the folder containing the `main.c` source file and the `Makefile` and type the command 
+If you're using a **Unix** system (MacOS or Linux), just use the Terminal to go in the folder containing the `Makefile` and type the command 
 ```
 make
 ```
-This should compile the C program into an executable called `snake`. If there's compilation problems, it's probably due to the file `ncurses.h` missing: if that's the case, just download it and include it in your build path.
+This should compile the C program into an executable called `snake` in a folder called `bin`. If there's compilation problems, it's probably due to the file `ncurses.h` missing: if that's the case, just download it and include it in your build path.
 If you're using **Windows**, I already compiled the program and included the executable in the appropriate folder.
 
 ## How to lanuch
