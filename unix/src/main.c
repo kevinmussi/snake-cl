@@ -20,11 +20,14 @@ int main(int argc, char * argv[]) {
         } else if(!strcmp(par, "--no-obstacles") || !strcmp(par, "-no")) {
             no_obstacles = True;
         } else if(!strcmp(par, "--help") || !strcmp(par, "-h")) {
-            printf("Usage: snake [flags]\nFlags:\n\t");
-            printf("-h: print this help message.\n\t");
-            printf("-hard: play the hard mode.\n\t");
-            printf("-screen-wrap, -sw: play with the screen wrap mode.\n\t");
-            printf("-no-obstacles, -no: play without the generation of obstacles.\n\t");
+            printf("OVERVIEW: Command-line based Snake game. Made by: Kevin Ludovico Mussi.\n\n");
+            printf("URL: https://github.com/kevinmussi/snake-cl\n\n");
+            printf("USAGE: snake [flags]\n\nFLAGS:\n  ");
+            printf("-h, --help\t\tPrint this help message.\n  ");
+            printf("--hard\t\tPlay the hard mode.\n  ");
+            printf("-sw, --screen-wrap\tPlay with the screen wrap mode.\n  ");
+            printf("-no, --no-obstacles\tPlay without the generation of obstacles.\n");
+            return 0;
         } else {
             printf("Error! Unrecognized flag %s!\n", par);
             return -1;
