@@ -22,7 +22,7 @@ int main(int argc, char * argv[]) {
         } else if(!strcmp(par, "--help") || !strcmp(par, "-h")) {
             printf("OVERVIEW: Command-line based Snake game. Made by: Kevin Ludovico Mussi.\n\n");
             printf("URL: https://github.com/kevinmussi/snake-cl\n\n");
-            printf("USAGE: snake [flags]\n\nFLAGS:\n  ");
+            printf("USAGE: snake-cl [flags]\n\nFLAGS:\n  ");
             printf("-h, --help\t\tPrint this help message.\n  ");
             printf("--hard\t\tPlay the hard mode.\n  ");
             printf("-sw, --screen-wrap\tPlay with the screen wrap mode.\n  ");
