@@ -1,5 +1,7 @@
 #include "snake.h"
 
+#define VERSION "1.0"
+
 int main(int argc, char * argv[]) {
     char *par;
     
@@ -24,9 +26,14 @@ int main(int argc, char * argv[]) {
             printf("URL: https://github.com/kevinmussi/snake-cl\n\n");
             printf("USAGE: snake-cl [flags]\n\nFLAGS:\n  ");
             printf("-h, --help\t\tPrint this help message.\n  ");
+            printf("-v, --version\t\tPrint the game's version.\n  ");
             printf("--hard\t\tPlay the hard mode.\n  ");
             printf("-sw, --screen-wrap\tPlay with the screen wrap mode.\n  ");
             printf("-no, --no-obstacles\tPlay without the generation of obstacles.\n");
+            return 0;
+        } else if(!strcmp(par, "--version") || !strcmp(par, "-v")) {
+            printf(VERSION);
+            printf("\n");
             return 0;
         } else {
             printf("Error! Unrecognized flag %s!\n", par);
