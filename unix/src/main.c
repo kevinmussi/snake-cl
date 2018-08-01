@@ -12,26 +12,33 @@ int main(int argc, char * argv[]) {
     
     // Evaluate the program parameters
     int i;
+    int len;
     for(i = 1; i < argc; i++) {
         par = argv[i];
+        len = strlen(par);
         
-        if(!strcmp(par, "--hard")) {
+        if((len == 6 && !strcmp(par, "--hard")) ||
+               (len == 2 && !strcmp(par, "-H"))) {
             hard = True;
-        } else if(!strcmp(par, "--screen-wrap") || !strcmp(par, "-sw")) {
+        } else if((len == 13 && !strcmp(par, "--screen-wrap")) ||
+                      (len == 3 && !strcmp(par, "-sw"))) {
             screen_wrap = True;
-        } else if(!strcmp(par, "--no-obstacles") || !strcmp(par, "-no")) {
+        } else if((len == 14 && !strcmp(par, "--no-obstacles")) ||
+                      (len == 4 && !strcmp(par, "-nob"))) {
             no_obstacles = True;
-        } else if(!strcmp(par, "--help") || !strcmp(par, "-h")) {
+        } else if((len == 6 && !strcmp(par, "--help")) ||
+                      (len == 2 && !strcmp(par, "-h"))) {
             printf("OVERVIEW: Command-line based Snake game. Made by: Kevin Ludovico Mussi.\n\n");
             printf("URL: https://github.com/kevinmussi/snake-cl\n\n");
             printf("USAGE: snake-cl [flags]\n\nFLAGS:\n  ");
             printf("-h, --help\t\tPrint this help message.\n  ");
             printf("-v, --version\t\tPrint the game's version.\n  ");
-            printf("--hard\t\tPlay the hard mode.\n  ");
+            printf("-H, --hard\t\tPlay the hard mode (this overrides the \"--no-obstacles\" flag).\n  ");
             printf("-sw, --screen-wrap\tPlay with the screen wrap mode.\n  ");
-            printf("-no, --no-obstacles\tPlay without the generation of obstacles.\n");
+            printf("-nob, --no-obstacles\tPlay without the generation of obstacles.\n");
             return 0;
-        } else if(!strcmp(par, "--version") || !strcmp(par, "-v")) {
+        } else if((len == 9 && !strcmp(par, "--version")) ||
+                      (len == 2 && !strcmp(par, "-v"))) {
             printf(VERSION);
             printf("\n");
             return 0;
